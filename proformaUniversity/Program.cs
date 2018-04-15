@@ -23,7 +23,7 @@ namespace proformaUniversity
         while (reader.Read())
         {
             var _Professor = new Professor(reader);
-        Console.WriteLine(_Professor.Name + " is " + _Professor.Title + "Ha");
+        Console.WriteLine(_Professor.Name + "was added");
             }
         return _rv;
         }
@@ -42,7 +42,7 @@ namespace proformaUniversity
             while (reader.Read())
             {
                 var _Course = new Course(reader);
-                Console.WriteLine(_Course.Number + " is " + _Course.Course_Level + "is" + _Course.Course_Name + "is" + _Course.Course_Room + "and" + _Course.Start_Time);
+                Console.WriteLine(_Course.Number + " was added");
             }
             return _rv;
         }
