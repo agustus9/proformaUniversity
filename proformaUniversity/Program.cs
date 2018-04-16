@@ -14,28 +14,30 @@ namespace proformaUniversity
             //var professors = new List<Professor>();
 
         
-        var _select = "SELECT Professors.ID, Professors.Name, Professors.Title, Courses.Name AS Student, Courses.ID AS StudentID" +
-                " FROM Professor" +
-                " JOIN Courses ON Professors.CourseId = Course.Id";
+        var _select = "SELECT dbo.Professors.ID, Professors.Name, Professors.Title, Courses.Course_Name AS Student, Courses.ID AS StudentID" +
+                " FROM dbo.Professors" +
+                " JOIN dbo.Jobs ON Jobs.Professorid = Professors.Id" +
+                " JOIN dbo.Courses on Jobs.Courseid = Courses.ID";
         var query = new SqlCommand(_select, connection);
         var reader = query.ExecuteReader();
         var _rv = new List<Professor>();
+            //using (var reader = query.ExecuteReader())
         while (reader.Read())
         {
             var _Professor = new Professor(reader);
-        Console.WriteLine(_Professor.Name + "was added");
+        Console.WriteLine(_Professor.Name + " was added");
             }
         return _rv;
         }
 
         static public List<Course> GetAllCourses(SqlConnection connection)
         {
-            //var professors = new List<Professor>();
+            //var courses = new List<Course>();
 
 
-            var _select = "SELECT Courses.ID, Courses.Number, Courses.Course_Level, Courses.Course_Name, Courses.Course_Room, Course.Start_Time, Courses.Name AS Student, Courses.ID AS StudentID" +
-                    " FROM Course" +
-                    " JOIN Students ON Courses.StudentId = Student.Id";
+            var _select = "SELECT dbo.Courses.ID, Courses.Number, Courses.Course_Level, Courses.Course_Name, Courses.Course_Room, Course.Start_Time, Courses.Name AS Student, Courses.ID AS StudentID" +
+                    " FROM dbo.Courses" +
+                    " JOIN dbo.Students ON Courses.StudentId = Student.Id";
             var query = new SqlCommand(_select, connection);
             var reader = query.ExecuteReader();
             var _rv = new List<Course>();
@@ -49,19 +51,19 @@ namespace proformaUniversity
 
         static public List<Student> GetAllStudents(SqlConnection connection)
         {
-            //var professors = new List<Professor>();
+            //var students = new List<Student>();
 
 
-            var _select = "SELECT Students.ID, Students.FullName, Students.Email, Students.PhoneNumber, Students.Major, Students.FullName AS Name, Students.ID AS NameID" +
-                    " FROM Student" +
-                    " JOIN Students ON Courses.StudentId = Student.Id";
+            var _select = "SELECT dbo.Students.ID, Students.FullName, Students.Email, Students.PhoneNumber, Students.Major, Students.FullName AS Name, Students.ID AS NameID" +
+                    " FROM dbo.Students" +
+                    " JOIN dbo.Professors ON Courses.StudentId = Student.Id";
             var query = new SqlCommand(_select, connection);
             var reader = query.ExecuteReader();
             var _rv = new List<Student>();
             while (reader.Read())
             {
                 var _Student = new Student(reader);
-                Console.WriteLine(_Student.FullName + " is " + _Student.Email + "is" + _Student.PhoneNumber + "and" + _Student.Major + "Ha");
+                Console.WriteLine(_Student.FullName + " was added");
             }
             return _rv;
         }
@@ -70,23 +72,24 @@ namespace proformaUniversity
         static void InsertProfessor(SqlConnection conn, Professor newProfessor)
         {
             // Query the database
-            var _select = "INSERT INTO Professors (Name, Title) " + "VALUES (@Name, @Title)";
+            var _select = "INSERT INTO dbo.Professors (Name, Title) " + "VALUES (@Name, @Title)";
             var cmd = new SqlCommand(_select, conn);
             //var reader = query.ExecuteReader();
 
-            cmd.Parameters.AddWithValue("Name", newProfessor.Name);
-            cmd.Parameters.AddWithValue("Title", newProfessor.Title);
+            cmd.Parameters.AddWithValue("@Name", newProfessor.Name);
+            cmd.Parameters.AddWithValue("@Title", newProfessor.Title);
             cmd.ExecuteScalar();
-            //conn.Open();
             //cmd.ExecuteNonQuery();
-            //conn.Close();
+            conn.Open();
+            //cmd.ExecuteNonQuery();
+            conn.Close();
 
         }
 
         static void InsertCourse(SqlConnection conn, Course newCourse)
         {
             // Query the database
-            var _select = "INSERT INTO Courses (Number, Course_Level, Course_Name, Course_Room, Start_Time) " + "VALUES (@Course_Number, @Course_Level, @Course_Name, @Course_Room, @Start_Time)";
+            var _select = "INSERT INTO dbo.Courses (Number, Course_Level, Course_Name, Course_Room, Start_Time) " + "VALUES (@Course_Number, @Course_Level, @Course_Name, @Course_Room, @Start_Time)";
             var cmd = new SqlCommand(_select, conn);
             //var reader = query.ExecuteReader();
 
@@ -99,16 +102,16 @@ namespace proformaUniversity
 
 
             cmd.ExecuteScalar();
-            //conn.Open();
+            conn.Open();
             //cmd.ExecuteNonQuery();
-            //conn.Close();
+            conn.Close();
 
         }
 
         static void InsertStudent(SqlConnection conn, Student newStudent)
         {
             // Query the database
-            var _select = "INSERT INTO Students (FullName, Email, PhoneNumber, Major) " + "VALUES (@FullName, @Email, @PhoneNumber, @Major)";
+            var _select = "INSERT INTO dbo.Students (FullName, Email, PhoneNumber, Major) " + "VALUES (@FullName, @Email, @PhoneNumber, @Major)";
             var cmd = new SqlCommand(_select, conn);
             //var reader = query.ExecuteReader();
 
@@ -117,9 +120,9 @@ namespace proformaUniversity
             cmd.Parameters.AddWithValue("PhoneNumber", newStudent.PhoneNumber);
             cmd.Parameters.AddWithValue("Major", newStudent.Major);
             cmd.ExecuteScalar();
-            //conn.Open();
+            conn.Open();
             //cmd.ExecuteNonQuery();
-            //conn.Close();
+            conn.Close();
 
         }
         static void Main(string[] args)
@@ -179,7 +182,7 @@ namespace proformaUniversity
 
 
                 };
-                conn.Open();
+               // conn.Open();
                 InsertCourse(conn, newCourse);
                 InsertCourse(conn, newerCourse);
                 InsertCourse(conn, newestCourse);
@@ -187,26 +190,26 @@ namespace proformaUniversity
 
                 var newStudent = new Student
                 {
-                    FullName = "James",
+                    FullName = "James White",
                     Email = "j@gmail.com",
                     PhoneNumber = "8136700000",
                     Major = "Computer"
                 };
                 var newerStudent = new Student
                 {
-                    FullName = "Carl",
+                    FullName = "Carl Walters",
                     Email = "c@gmail.com",
                     PhoneNumber = "8136500000",
                     Major = "Math"
                 };
                 var newestStudent = new Student
                 {
-                    FullName = "John",
+                    FullName = "John Black",
                     Email = "j@gmail.com",
                     PhoneNumber = "8138500000",
                     Major = "Science"
                 };
-                conn.Open();
+                //conn.Open();
                 InsertStudent(conn, newStudent);
                 InsertStudent(conn, newerStudent);
                 InsertStudent(conn, newestStudent);
